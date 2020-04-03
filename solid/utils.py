@@ -6,6 +6,7 @@ from solid import union, cube, translate, rotate, square, circle, polyhedron
 from solid import difference, intersection, multmatrix, cylinder, color
 from solid import text, linear_extrude, resize
 from solid import run_euclid_patch
+from solid import scale, hole
 
 from solid import OpenSCADObject, P2, P3, P4, Vec3 , Vec4, Vec34, P3s, P23
 from solid import Points, Indexes, ScadSize
@@ -145,6 +146,21 @@ def distribute_in_grid(objects:Sequence[OpenSCADObject],
             else:
                 break
     return union()(*ret)
+
+# ==============
+# = Operations =
+# ==============
+def shell(obj: OpenSCADObject, wall:float, center_x:float, center_y:float, center_z:float) -> OpenSCADObject:
+    '''
+    create a shell of a given object centered at [center_x, center_y, center_z] scaled by wall as a percentage.
+    PARAMETERS:
+        center_x, center_y, center_z: center coordinates of the hollow shell
+        wall: thickness of the shell given as a percentage of the given object
+    RETURNS:
+        shell of given OpenSCADObject
+    '''
+    solution = obj - hole()(translate([center_x/2, center_y/2, center_z/2])(scale([wall, wall, wall])(obj)))
+    return solution
 
 # ==============
 # = Directions =
